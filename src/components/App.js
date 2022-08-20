@@ -1,56 +1,65 @@
-import React, { useState, useEffect }from 'react';
-import Header from './Header';
-import AddContact from './AddContact';
-import ContactList from './ContactList';
+import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import "./App.css";
+import Header from "./Header";
+import AddContact from "./AddContact";
+import ContactList from "./ContactList";
+import ContactDetail from "./ContactDetail";
 
-function App(){
-    const [contacts, setContacts] = useState([]);
+function App() {
+  const LOCAL_STORAGE_KEY = "contacts";
+  const [contacts, setContacts] = useState([]);
 
-    const LOCAL_STORAGE_KEY = 'contacts';
-    // const contacts = [
-    //     {
-    //         "id": '1',
-    //         name: 'Jack Jones',
-    //         email: 'jack@jones.com'
-    //     },
-    //     {
-    //         "id": '2',
-    //         name: 'Dave Smith',
-    //         email: 'dave@smith.com'
-    //     },
-    //     {
-    //         "id": '3',
-    //         name: 'Tom Tarpey',
-    //         email: 'tom@tarpey.com'
-    //     }
-    // ];
+  const addContactHandler = (contact) => {
+    console.log(contact);
+    setContacts([...contacts, { id: contacts.length, ...contact }]);
+  };
 
-    // useEffect(() => {
-    //     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(contacts));
-    // }, [contacts]);
+  const removeContactHandler = (id) => {
+    const newContactList = contacts.filter((contact) => {
+      return contact.id !== id;
+    });
 
-    const addContactHandler = (contact) => {
-        console.log(contact);
-        contact.id = contacts.length;
-        setContacts([...contacts, contact]);
-    };
+    setContacts(newContactList);
+  };
 
-    const removeContactHandler = (id) => {
-        const newContactList = contacts.filter((contact) => {
-            return contact.id !== id;
-        });
+  useEffect(() => {
+    const retriveContacts = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY));
+    if (retriveContacts) setContacts(retriveContacts);
+  }, []);
 
-        setContacts(newContactList);
-    };
+  useEffect(() => {
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(contacts));
+  }, [contacts]);
 
-    return (
-        <div className='ui container'>
-            <Header />
-            <AddContact addContactHandler={addContactHandler} />
-            <ContactList contacts={ contacts } getContactId={ removeContactHandler } />
-        </div>
+  return (
+    <div className="ui container">
+      <Router>
+        <Header />
+        <Switch>
+          <Route
+            path="/"
+            exact
+            render={(props) => (
+              <ContactList
+                {...props}
+                contacts={contacts}
+                getContactId={removeContactHandler}
+              />
+            )}
+          />
+          <Route
+            path="/add"
+            render={(props) => (
+              <AddContact {...props} addContactHandler={addContactHandler} />
+            )}
+          />
 
-    )
+          <Route path="/contact/:id" component={ContactDetail} />
+        </Switch>
+      </Router>
+    </div>
+  );
 }
 
 export default App;
