@@ -1,5 +1,5 @@
-# tom_react_boilerplate
-This is a minimalist react boilerplate to get started in a react project
+# React CRUD Frontend Project
+This is a simple Contact Manager APP to help teach the creation of a react front end application.
 
 ## Usage
 - to build for dev `npm run build:dev`
